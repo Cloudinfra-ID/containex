@@ -1,0 +1,23 @@
+version: "3.9"
+name: pihole
+services:
+  pihole:
+    image: ${PIHOLE_IMAGE}:${PIHOLE_VERSION}
+    container_name: pihole
+    restart: always
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8880:80/tcp"
+    environment:
+      TZ: ${TIMEZONE}
+      WEBPASSWORD: ${PIHOLE_DEFAULT_PASSWORD}
+    networks:
+      - web
+    volumes:
+      - "${PWD}/volumes/etc-pihole:/etc/pihole"
+      - "${PWD}/volumes/etc-dnsmasq.d:/etc/dnsmasq.d"
+networks:
+  web:
+    external: true
+    name: web
