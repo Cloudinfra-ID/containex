@@ -1,0 +1,25 @@
+version: "3.9"
+name: grafana
+services:
+  grafana:
+    image: ${GRAFANA_IMAGE}:${GRAFANA_VERSION}
+    #build: .
+    container_name: grafana
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    restart: always
+    volumes:
+      - "${PWD}/volumes/grafana_configuration/grafana.ini:/etc/grafana/grafana.ini"
+      - "${PWD}/volumes/grafana_configuration/provisioning:/etc/grafana/provisioning"
+      - "${PWD}/volumes/grafana_data:/var/lib/grafana"
+    networks:
+      - web
+    ports:
+      - "3000:3000"
+networks:
+  web:
+    external: true
+    name: web
