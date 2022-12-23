@@ -1,0 +1,25 @@
+version: "3.9"
+name: blackbox-exporter
+services:
+  blackbox-exporter:
+    image: ${BLACKBOX_EXPORTER_IMAGE}:${BLACKBOX_EXPORTER_VERSION}
+    #build: .
+    container_name: blackbox-exporter
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    restart: always
+    volumes:
+      - "${PWD}/volumes/config:/config"
+    networks:
+      - web
+    ports:
+      - "127.0.0.1:9115:9115"
+    command:
+      - "--config.file=/config/blackbox-exporter.yml"
+networks:
+  web:
+    external: true
+    name: web
