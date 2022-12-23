@@ -1,0 +1,25 @@
+version: "3.9"
+name: metabase
+services:
+  metabase:
+    image: ${METABASE_IMAGE}:${METABASE_VERSION}
+    #build: .
+    container_name: metabase
+    env_file: ${PWD}/.env
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+    restart: always
+    volumes:
+      - "${PWD}/.env:/opt/metabase/.env"
+      - "${PWD}/volumes/metabase_data:/opt/metabase/data"
+    networks:
+      - web
+    ports:
+      - "3100:3000"
+networks:
+  web:
+    external: true
+    name: web
