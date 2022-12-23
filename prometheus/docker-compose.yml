@@ -1,0 +1,31 @@
+version: "3.9"
+name: prometheus
+services:
+  prometheus:
+    image: ${PROMETHEUS_IMAGE}:${PROMETHEUS_VERSION}
+    #build: .
+    container_name: prometheus
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    restart: always
+    volumes:
+      - "${PWD}/volumes/prometheus_configuration:/etc/prometheus"
+      - "${PWD}/volumes/prometheus_data:/prometheus"
+    networks:
+      - web
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.enable-admin-api"
+networks:
+  web:
+    external: true
+    name: web
