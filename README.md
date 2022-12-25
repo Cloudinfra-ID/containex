@@ -9,6 +9,7 @@ Collection of Docker compose thats made your life easier
 Clone this repository & choose compose project `Ex: portainer`
 ```shell
 $ cd portainer
+$ docker create network web
 $ docker-compose up -d
 ```
 This will create `portainer` service on detached mode, when you try to visit URL `https://127.0.0.1:9443` the `portainer` setup GUI will be appears
