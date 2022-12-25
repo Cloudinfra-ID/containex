@@ -14,7 +14,9 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRESQL_USER}
       POSTGRES_PASSWORD: ${POSTGRESQL_PASSWORD}
+    entrypoint: ["/start-postgres.sh"]
     volumes:
+      - "$PWD/start-postgres.sh:/start-postgres.sh"
       - "$PWD/volumes/postgresql_data:/var/lib/postgresql/data"
     networks:
       - web
