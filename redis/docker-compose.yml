@@ -1,0 +1,27 @@
+version: "3.9"
+name: redis
+services:
+  redis:
+    image: ${REDIS_IMAGE}:${REDIS_VERSION}
+    #build: .
+    container_name: redis
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    restart: always
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    entrypoint: ["/start-redis.sh"]
+    volumes:
+      - "${PWD}/start-redis.sh:/start-redis.sh"
+      - "${PWD}/volumes/redis_data:/data"
+    networks:
+      - web
+    ports:
+      - "6379:6379"
+networks:
+  web:
+    external: true
+    name: web
