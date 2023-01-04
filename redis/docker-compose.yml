@@ -10,7 +10,6 @@ services:
       resources:
         limits:
           memory: 256M
-    restart: always
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     entrypoint: ["/start-redis.sh"]

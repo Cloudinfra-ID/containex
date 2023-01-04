@@ -50,7 +50,6 @@ services:
       resources:
         limits:
           memory: 256M
-    restart: always
     networks:
       - web
     ports:

@@ -10,7 +10,6 @@ services:
       resources:
         limits:
           memory: 1024M
-    restart: always
     volumes:
       - "${PWD}/volumes/prometheus_configuration:/etc/prometheus"
       - "${PWD}/volumes/prometheus_data:/prometheus"

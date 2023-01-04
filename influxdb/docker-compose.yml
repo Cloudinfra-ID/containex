@@ -10,7 +10,6 @@ services:
       resources:
         limits:
           memory: 1024M
-    restart: always
     volumes:
       - "${PWD}/volumes/influxdb_configuration:/etc/influxdb2"
       - "${PWD}/volumes/influxdb_data:/var/lib/influxdb2"
