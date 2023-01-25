@@ -1,0 +1,47 @@
+version: "3.9"
+name: metabase
+services:
+  metabase:
+    image: ${METABASE_IMAGE}:${METABASE_VERSION}
+    #build: .
+    container_name: metabase
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+    depends_on:
+      - metabase_db
+    environment:
+      JAVA_OPTS: "${JAVA_OPTS}"
+      MB_DB_TYPE: ${MB_DB_TYPE}
+      MB_DB_DBNAME: ${MB_DB_DBNAME}
+      MB_DB_HOST: ${MB_DB_HOST}
+      MB_DB_PORT: ${MB_DB_PORT}
+      MB_DB_PASS: ${MB_DB_PASS}
+      MB_DB_USER: ${MB_DB_USER}
+    volumes:
+      - "${PWD}/volumes/metabase_data:/opt/metabase/data"
+    networks:
+      - metabasenet
+    ports:
+      - "3000:3000"
+  metabase_db:
+    image: ${POSTGRESQL_IMAGE}:${POSTGRESQL_VERSION}
+    #build: .
+    container_name: metabase-db
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+    environment:
+      POSTGRESQL_ADMIN_PASSWORD: ${POSTGRESQL_ADMIN_PASSWORD}
+      POSTGRESQL_DATABASE: ${POSTGRESQL_DATABASE}
+      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD}
+      POSTGRESQL_USER: ${POSTGRESQL_USER}
+    networks:
+      - metabasenet
+    volumes:
+      - "$PWD/volumes/metabase_db_data:/var/lib/pgsql/data"
+networks:
+  metabasenet: null
