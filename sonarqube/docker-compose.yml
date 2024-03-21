@@ -1,0 +1,44 @@
+version: "3.9"
+name: sonarqube
+services:
+  sonarqube:
+    image: ${SONARQUBE_IMAGE}:${SONARQUBE_VERSION}
+    #build: .
+    container_name: sonarqube
+    restart: always
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: true
+      SONAR_JDBC_URL: jdbc:postgresql://sonarqube_db:5432/sonar
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+    volumes:
+      - "${PWD}/volumes/sonarqube_data:/opt/sonarqube/data"
+      - "${PWD}/volumes/sonarqube_extensions:/opt/sonarqube/extensions"
+      - "${PWD}/volumes/sonarqube_logs:/opt/sonarqube/logs"
+      - "${PWD}/volumes/sonarqube_temp:/opt/sonarqube/temp"
+    networks:
+      - sonarnet
+    ports:
+      - "9000:9000"
+  sonarqube_db:
+    image: postgres:9.6.24-alpine
+    #build: .
+    container_name: sonarqube_db
+    restart: always
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    volumes:
+      - "${PWD}/volumes/sonarqube_db_data:/var/lib/postgresql"
+    networks:
+      - sonarnet
+networks:
+  sonarnet:
