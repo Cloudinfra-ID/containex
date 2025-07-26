@@ -1,0 +1,32 @@
+version: "3.9"
+name: mqtt
+services:
+  mqtt:
+    image: ${MQTT_IMAGE}:${MQTT_VERSION}
+    container_name: mqtt
+    hostname: mqtt
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    restart: always
+    environment:
+      TZ: ${MQTT_TIMEZONE}
+    volumes:
+      - "${PWD}/volumes/mqtt_data:/mosquitto/data"
+      - "${PWD}/volumes/mqtt_config:/mosquitto/config"
+      - "${PWD}/volumes/mqtt_log:/mosquitto/log"
+    networks:
+      - web
+    ports:
+      - 8883:8883
+      - 1883:1883
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+networks:
+  web:
+    external: true
+    name: web
