@@ -1,0 +1,57 @@
+version: "3.9"
+name: vault
+services:
+  vault:
+    image: ${VAULT_IMAGE}:${VAULT_VERSION}
+    hostname: vault
+    container_name: vault
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    restart: unless-stopped
+    command: ["server"]
+    cap_add:
+      - IPC_LOCK
+    environment:
+      TZ: Asia/Jakarta
+    volumes:
+      - ${PWD}/volumes/vault_file/:/vault/file/
+      - ${PWD}/volumes/vault_config/:/vault/config
+      - ${PWD}/volumes/vault_logs/:/vault/logs/
+    ports:
+      - 8200:8200
+    networks:
+      - web
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z vault 8200"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+  vault_unsealer:
+    image: vault-unsealer:latest
+    hostname: vault-unsealer
+    container_name: vault-unsealer
+    depends_on:
+      #- vault
+      vault:
+        condition: service_healthy
+    volumes:
+      - ${PWD}/volumes/vault_unseal:/vault/unseal:ro
+    entrypoint: ["/bin/sh", "/vault/unseal/vault-unseal.sh"]
+    networks:
+      - web
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+networks:
+  web:
+    external: true
+    name: web
