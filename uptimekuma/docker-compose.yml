@@ -1,0 +1,30 @@
+version: "3.9"
+name: uptimekuma
+services:
+  uptimekuma:
+    image: ${UPTIMEKUMA_IMAGE}:${UPTIMEKUMA_VERSION}
+    #build: .
+    hostname: uptimekuma
+    container_name: uptimekuma
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    restart: always
+    networks:
+      - web
+    ports:
+      - "3301:3001"
+    environment:
+      TZ: Asia/Jakarta
+    volumes:
+      - ${PWD}/volumes/uptimekuma_data:/app/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+networks:
+  web:
+    external: true
+    name: web
