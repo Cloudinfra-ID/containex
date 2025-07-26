@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  nextcloud:
+    image: ${NEXTCLOUD_IMAGE}:${NEXTCLOUD_VERSION}
+    hostname: nextcloud
+    container_name: nextcloud
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    ports:
+      - 8080:80
+    volumes:
+      - ${PWD}/volumes/nextcloud:/var/www/html
+      - ${PWD}/volumes/nextcloud_config:/var/www/html/config
+      - ${PWD}/volumes/nextcloud_apps:/var/www/html/custom_apps
+      - ${PWD}/volumes/nextcloud_data:/var/www/html/data
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_HOST: ${MYSQL_HOST}
+      TZ: Asia/Jakarta
+    #depends_on:
+    #  - nextclouddb
+    networks:
+      - web
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  #nextclouddb:
+  #  image: mariadb:10.5
+  #  hostname: nextcloud-db
+  #  container_name: nextcloud-db
+  #  environment:
+  #    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+  #    - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+  #    - MYSQL_DATABASE=${MYSQL_DATABASE}
+  #    - MYSQL_USER=${MYSQL_USER}
+  #  volumes:
+  #    - ${PWD}/volumes/nextclouddb_data:/var/lib/mysql
+  #  networks:
+  #    - web
+  #  restart: always
+  #  logging:
+  #    driver: json-file
+  #    options:
+  #      max-size: "10m"
+  #      max-file: "3"
+
+  redis:
+    image: redis:alpine
+    hostname: nextcloud-redis
+    container_name: nextcloud-redis
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    networks:
+      - web
+    restart: always
+    volumes:
+      - ${PWD}/volumes/redis_data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  web:
+    external: true
+    name: web
