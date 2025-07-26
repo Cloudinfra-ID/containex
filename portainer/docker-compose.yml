@@ -4,12 +4,15 @@ services:
   portainer:
     image: ${PORTAINER_IMAGE}:${PORTAINER_VERSION}
     #build: .
+    hostname: portainer
     container_name: portainer
     restart: always
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 256M
+    environment:
+      TZ: Asia/Jakarta
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "${PWD}/volumes/portainer_data:/data"
@@ -17,6 +20,11 @@ services:
       - web
     ports:
       - "9443:9443"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 networks:
   web:
     external: true
