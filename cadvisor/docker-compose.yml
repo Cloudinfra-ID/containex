@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  cadvisor:
+    image: ${CADVISOR_IMAGE}:${CADVISOR_VERSION}
+    container_name: cadvisor
+    hostname: cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
+    networks:
+      - web
+    ports:
+      - "2080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    restart: unless-stopped
+networks:
+  web:
+    external: true
+    name: web
