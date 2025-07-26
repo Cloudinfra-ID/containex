@@ -1,0 +1,36 @@
+version: "3.9"
+name: wiki
+services:
+  wiki:
+    image: ${WIKIJS_IMAGE}:${WIKISJ_VERSION}
+    hostname: wiki
+    container_name: wiki
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Jakarta
+      DB_TYPE: ${DB_TYPE}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+    volumes:
+      - ${PWD}/volumes/wiki_logs/:/wiki/logs/
+      - ${PWD}/volumes/wiki_data:/wiki/data/content
+    ports:
+      - 3100:3000
+    networks:
+      - web
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+networks:
+  web:
+    external: true
+    name: web
