@@ -4,11 +4,18 @@ services:
   pihole:
     image: ${PIHOLE_IMAGE}:${PIHOLE_VERSION}
     container_name: pihole
+    hostname: pihole
+    deploy:
+      resources:
+        limits:
+          memory: 128M
     restart: always
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "8880:80/tcp"
+      - "53:53"
+      - "80:80"
+      - "43:443"
+    cap_add:
+      - NET_ADMIN
     environment:
       TZ: ${TIMEZONE}
       WEBPASSWORD: ${PIHOLE_DEFAULT_PASSWORD}
@@ -17,6 +24,11 @@ services:
     volumes:
       - "${PWD}/volumes/etc-pihole:/etc/pihole"
       - "${PWD}/volumes/etc-dnsmasq.d:/etc/dnsmasq.d"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 networks:
   web:
     external: true
