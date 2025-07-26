@@ -1,0 +1,35 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:1.104.1
+    restart: always
+    hostname: n8n
+    container_name: n8n
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      - N8N_HOST=${DOMAIN_HOST}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=https://${DOMAIN_HOST}/
+      - GENERIC_TIMEZONE=${TIMEZONE}
+      #- N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      #- N8N_RUNNERS_ENABLED=true
+    volumes:
+      - ${PWD}/volumes/n8n_data:/home/node/.n8n
+      - ${PWD}/volumes/local_files:/files
+    networks:
+      - web
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  web:
+    external: true
