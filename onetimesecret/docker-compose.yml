@@ -1,0 +1,78 @@
+version: "3.9"
+name: onetimesecret
+services:
+  onetimesecret:
+    image: ${OTS_IMAGE}:${OTS_VERSION}
+    #build: .
+    hostname: onetimesecret
+    container_name: onetimesecret
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    restart: always
+    networks:
+      - web
+    ports:
+      - "3300:3000"
+    environment:
+      REDIS_URL: ${OTS_REDIS_URL}
+      COLONEL: ${OTS_COLONEL_EMAIL}
+      HOST: ${OTS_HOST}
+      SSL: ${OTS_ENABLE_SSL}
+      RACK_ENV: ${OTS_ENVIRONMENT}
+      SECRET: ${OTS_SECRET}
+      EMAILER_MODE: ${OTS_EMAILER_MODE}
+      FROM: ${OTS_FROM}
+      FROMNAME: ${OTS_FROMNAME}
+      SMTP_HOST: ${OTS_SMTP_HOST}
+      SMTP_PORT: ${OTS_SMTP_PORT}
+      SMTP_USERNAME: ${OTS_SMTP_USERNAME}
+      SMTP_PASSWORD: ${OTS_SMTP_PASSWORD}
+      SMTP_AUTH: ${OTS_SMTP_AUTH}
+      SMTP_TLS: ${OTS_SMTP_TLS}
+      TZ: Asia/Jakarta
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      onetimesecret_redis:
+        condition: service_healthy
+    # nc must be installed on base image in order to use healthcheck
+    #healthcheck:
+    #  test: ["CMD", "sh", "-c", "nc -z onetimesecret 3000"]
+    #  interval: 5s
+    #  timeout: 3s
+    #  retries: 10
+  onetimesecret_redis:
+    image: ${REDIS_IMAGE}:${REDIS_VERSION}
+    #build: .
+    hostname: onetimesecret-redis
+    container_name: onetimesecret-redis
+    command: ["redis-server", "/etc/redis/redis.conf", "--save", "60", "1", "--loglevel", "warning"]
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    restart: always
+    volumes:
+      - ${PWD}/volumes/redis_data:/data
+      - ${PWD}/volumes/redis_config/redis.conf:/etc/redis/redis.conf
+    networks:
+      - web
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+networks:
+  web:
+    external: true
+    name: web
