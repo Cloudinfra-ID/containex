@@ -1,0 +1,34 @@
+version: "3.9"
+name: mailpit
+services:
+  mailpit:
+    image: ${MAILPIT_IMAGE}:${MAILPIT_VERSION}
+    hostname: mailpit
+    container_name: mailpit
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    restart: unless-stopped
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      TZ: Asia/Jakarta
+    volumes:
+      - ${PWD}/volumes/mailpit_data:/data
+    ports:
+      - 8325:8025
+      - 1325:1025
+    networks:
+      - web
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+networks:
+  web:
+    external: true
+    name: web
