@@ -4,6 +4,7 @@ services:
   minio:
     image: ${MINIO_IMAGE}:${MINIO_VERSION}
     #build: .
+    hostname: minio
     container_name: minio
     restart: always
     #user: "${UID}:${GID}"
@@ -25,6 +26,11 @@ services:
       MINIO_SERVER_URL: "${CONFIG_MINIO_SERVER_URL}"
       CONSOLE_SECURE_TLS_REDIRECT: "${CONFIG_CONSOLE_SECURE_TLS_REDIRECT}"
     command: ["server", "/data", "--console-address", ":9001"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 networks:
   web:
     external: true
